@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shh 🤫 - Secure Crypto Operations</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="canvas.js"></script>
+    <script type="module" src="main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>🤫 Shh</h1>
+        <div class="canvas-container">
+            <canvas id="paintCanvas" width="300" height="300"></canvas>
+        </div>
+        <!-- Key Generation Section -->
+        <div class="section">
+            <h2>Generate Encryption Keys</h2>
+            <form id="generateKeysForm">
+                <div class="form-group">
+                    <label for="scribbleGenerate">Passphrase (Scribble):</label>
+                    <input type="password" id="scribbleGenerate" name="scribble" required 
+                           placeholder="Enter a secure passphrase">
+                </div>
+                <div class="form-group">
+                    <label for="userIdGenerate">User ID:</label>
+                    <input type="text" id="userIdGenerate" name="userId" required 
+                           placeholder="Enter your user identifier">
+                </div>
+                <button type="button" class="btn" data-action="generateKeys">
+                    Generate Keys
+                    <span class="loading" style="display: none;"></span>
+                </button>
+            </form>
+            <div id="generateResult" class="result">
+                <h3>Generated Keys:</h3>
+                <div id="generatedKeys"></div>
+            </div>
+        </div>
+
+        <!-- Get Public Key Section -->
+        <div class="section">
+            <h2>Get Cached Public Key</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                Retrieve the public key from the currently cached key pair. You must generate keys first.
+            </p>
+            <button type="button" class="btn" data-action="getPublicKey">
+                Get Cached Public Key
+                <span class="loading" style="display: none;"></span>
+            </button>
+            <div id="publicKeyResult" class="result">
+                <h3>Public Key:</h3>
+                <div id="publicKeyDisplay" class="key-display"></div>
+            </div>
+        </div>
+
+        <!-- Decrypt Message Section -->
+        <div class="section">
+            <h2>Decrypt Message</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                Decrypt a message using the currently cached private key. You must generate keys first.
+            </p>
+            <form id="decryptForm">
+                <div class="form-group">
+                    <label for="ciphertext">Encrypted Message:</label>
+                    <textarea id="ciphertext" name="ciphertext" required 
+                              placeholder="Paste the encrypted message here"></textarea>
+                </div>
+                <button type="button" class="btn" data-action="decrypt">
+                    Decrypt Message
+                    <span class="loading" style="display: none;"></span>
+                </button>
+            </form>
+            <div id="decryptResult" class="result">
+                <h3>Decrypted Message:</h3>
+                <div id="decryptedMessage"></div>
+            </div>
+        </div>
+
+        <!-- Cache Management Section -->
+        <div class="section">
+            <h2>Cache Management</h2>
+            <p style="margin-bottom: 20px; color: #666;">
+                Clear the cached keys when you're done or want to generate new keys with different parameters.
+            </p>
+            <button type="button" class="btn" data-action="clearCache" style="background: linear-gradient(135deg, #f44336, #d32f2f);">
+                Clear Key Cache
+                <span class="loading" style="display: none;"></span>
+            </button>
+            <div id="cacheResult" class="result">
+                <div id="cacheMessage"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
