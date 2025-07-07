@@ -109,29 +109,26 @@ function handleEncrypt() {
 
 // Display functions
 function showGeneratedKeys(result) {
-    const canvasContainer = document.querySelector('.canvas-container');
+    const flipContainer = document.getElementById('canvasFlipContainer');
 
-    // Animate canvas painter div - scale down and fade out
-    if (canvasContainer) {
-        gsap.to(canvasContainer, {
-            scale: 0,
-            opacity: 0,
-            duration: 0.8,
-            ease: "power2.inOut",
-            onComplete: () => {
-                getPublicKey();
-                if (window.canvasPainter) {
-                    window.canvasPainter.destroy();
-                }
+    if (flipContainer) {
+        // Trigger the flip animation
+        flipContainer.classList.add('flipped');
+
+        // Get the public key and show it on the back
+        setTimeout(() => {
+            getPublicKey();
+            if (window.canvasPainter) {
+                window.canvasPainter.destroy();
             }
-        });
+        }, 400); // Wait for half the flip animation
     }
-
 }
 
 function showPublicKey(publicKey) {
-    const resultDiv = document.getElementById('generateResult');
-    // Create and show copy button
+    const flipBackButton = document.getElementById('flipBackButton');
+
+    // Create and show copy button on the back of the card
     const copyButton = document.createElement('button');
     copyButton.className = 'btn';
     copyButton.innerHTML = '<span>Copy Public Key</span>';
@@ -150,12 +147,15 @@ function showPublicKey(publicKey) {
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });
-
         }
     };
 
+    flipBackButton.innerHTML = '';
+    flipBackButton.appendChild(copyButton);
+
+    // Also clear the generateResult div since we're showing the button on the card back
+    const resultDiv = document.getElementById('generateResult');
     resultDiv.innerHTML = '';
-    resultDiv.appendChild(copyButton);
 }
 
 function showDecryptedMessage(message) {
@@ -174,6 +174,31 @@ function showCacheCleared() {
     messageDiv.innerHTML = `<strong>Success:</strong> Key cache has been cleared successfully.`;
     resultDiv.classList.add('show');
     resultDiv.classList.remove('error');
+
+    // Flip the card back to show canvas again
+    const flipContainer = document.getElementById('canvasFlipContainer');
+    if (flipContainer && flipContainer.classList.contains('flipped')) {
+        flipContainer.classList.remove('flipped');
+
+        // Clear the back button
+        const flipBackButton = document.getElementById('flipBackButton');
+        if (flipBackButton) {
+            flipBackButton.innerHTML = '';
+        }
+    }
+}
+
+function flipBackToCanvas() {
+    const flipContainer = document.getElementById('canvasFlipContainer');
+    if (flipContainer) {
+        flipContainer.classList.remove('flipped');
+
+        // Clear the back button
+        const flipBackButton = document.getElementById('flipBackButton');
+        if (flipBackButton) {
+            flipBackButton.innerHTML = '';
+        }
+    }
 }
 
 function showEncryptMode() {
@@ -181,7 +206,7 @@ function showEncryptMode() {
     const generateResult = document.getElementById('generateResult');
     const encryptSection = document.getElementById('encryptSection');
 
-    // Hide the canvas since we're in encrypt mode
+    // Hide the canvas container since we're in encrypt mode
     if (canvasContainer) {
         canvasContainer.style.display = 'none';
     }

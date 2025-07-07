@@ -66,7 +66,7 @@ docker build -t shh-dev .
 docker run -it --rm \
    -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
    -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
-   safeshare-shh-dev /bin/bash
+   shh-dev /bin/bash
 ```
 
 ### Docker Environment Features

@@ -13,7 +13,18 @@
     <div class="container">
         <h1>🤫 Shh</h1>
         <div class="canvas-container">
-            <canvas id="paintCanvas" width="300" height="300"></canvas>
+            <div class="canvas-flip-container" id="canvasFlipContainer">
+                <div class="canvas-front">
+                    <canvas id="paintCanvas" width="300" height="300"></canvas>
+                </div>
+                <div class="canvas-back">
+                    <div class="message">
+                        <strong>Keys Generated Successfully!</strong><br>
+                        Your public key is ready to share
+                    </div>
+                    <div id="flipBackButton"></div>
+                </div>
+            </div>
         </div>
 
         <div id="generateResult"></div>
