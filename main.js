@@ -4,6 +4,8 @@ import {
     getPublicKey,
     decryptMessage,
     clearKeyCache,
+    storePublicKey,
+    encryptMessage,
 } from './crypto.js';
 
 // Global variables to store results
@@ -16,6 +18,7 @@ function initializeCryptoHandlers() {
         setTimeout(initializeCryptoHandlers, 100);
         return;
     }
+
 
     // Override the crypto worker message handler to work with our UI
     cryptoWorker.onmessage = (event) => {
@@ -38,11 +41,19 @@ function initializeCryptoHandlers() {
             } else if (result === "Cache cleared") {
                 // Cache cleared
                 showCacheCleared();
+            } else if (result === "Public key stored successfully") {
+                // Public key stored
+                console.log("Public key stored successfully");
+            } else if (typeof result === 'string' && result.includes('-----BEGIN PGP MESSAGE-----')) {
+                // Encrypted message
+                showEncryptedMessage(result);
             } else {
+                console.log(result)
                 // Decrypted data
                 showDecryptedMessage(result);
             }
         } else {
+            console.error("Crypto worker error:", event.data.error);
             showError(event.data.error);
         }
     };
@@ -75,6 +86,25 @@ function handleClearCache() {
 
     hideResults();
     clearKeyCache();
+}
+
+function handleEncrypt() {
+    const form = document.getElementById('encryptForm');
+    const formData = new FormData(form);
+    const plaintext = formData.get('plaintext');
+
+    if (!plaintext) {
+        showError('Please enter a message to encrypt');
+        return;
+    }
+
+    const button = form.querySelector('.btn');
+    const loading = button.querySelector('.loading');
+    loading.style.display = 'inline-block';
+    button.disabled = true;
+
+    hideResults();
+    encryptMessage(plaintext);
 }
 
 // Display functions
@@ -110,7 +140,9 @@ function showPublicKey(publicKey) {
             // Convert public key to base64
             const base64PublicKey = btoa(publicKey);
 
-            navigator.clipboard.writeText(base64PublicKey).then(() => {
+            const link = `${window.location.host}/?key=${base64PublicKey}`;
+
+            navigator.clipboard.writeText(link).then(() => {
                 copyButton.innerHTML = '<span>Copied!</span>';
                 setTimeout(() => {
                     copyButton.innerHTML = '<span>Copy Public Key</span>';
@@ -118,6 +150,7 @@ function showPublicKey(publicKey) {
             }).catch(err => {
                 console.error('Failed to copy: ', err);
             });
+
         }
     };
 
@@ -139,6 +172,54 @@ function showCacheCleared() {
     const messageDiv = document.getElementById('cacheMessage');
 
     messageDiv.innerHTML = `<strong>Success:</strong> Key cache has been cleared successfully.`;
+    resultDiv.classList.add('show');
+    resultDiv.classList.remove('error');
+}
+
+function showEncryptMode() {
+    const canvasContainer = document.querySelector('.canvas-container');
+    const generateResult = document.getElementById('generateResult');
+    const encryptSection = document.getElementById('encryptSection');
+
+    // Hide the canvas since we're in encrypt mode
+    if (canvasContainer) {
+        canvasContainer.style.display = 'none';
+    }
+
+    // Show the encrypt section
+    if (encryptSection) {
+        encryptSection.style.display = 'block';
+    }
+
+    // Show message that we're ready to encrypt
+    generateResult.innerHTML = `
+        <div class="key-display">
+            <strong>Encrypt Mode Active</strong><br>
+            Public key loaded from URL. You can now encrypt messages to send to the key owner.
+        </div>
+    `;
+    generateResult.classList.add('show');
+    generateResult.classList.remove('error');
+}
+
+function showEncryptedMessage(encryptedMessage) {
+    const resultDiv = document.getElementById('encryptResult');
+    const messageDiv = document.getElementById('encryptedMessage');
+    const copyButton = document.getElementById('copyEncrypted');
+
+    messageDiv.innerHTML = `<div class="key-display">${escapeHtml(encryptedMessage)}</div>`;
+    copyButton.style.display = 'inline-block';
+    copyButton.onclick = () => {
+        navigator.clipboard.writeText(encryptedMessage).then(() => {
+            copyButton.innerHTML = 'Copied!';
+            setTimeout(() => {
+                copyButton.innerHTML = 'Copy Encrypted Message';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
+
     resultDiv.classList.add('show');
     resultDiv.classList.remove('error');
 }
@@ -169,9 +250,37 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Function to check and handle URL parameters
+function checkUrlParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const keyParam = urlParams.get('key');
+
+    if (keyParam) {
+        try {
+            // Decode the base64 public key
+            const publicKey = atob(keyParam);
+
+            // Store the public key in the worker
+            storePublicKey(publicKey);
+
+            // Update UI to show we're in "encrypt mode" with external key
+            showEncryptMode();
+
+            // Clean up URL to remove the key parameter
+            const url = new URL(window.location);
+            url.searchParams.delete('key');
+            window.history.replaceState({}, document.title, url.pathname);
+
+        } catch (error) {
+            showError('Invalid public key in URL parameter');
+        }
+    }
+}
+
 // Initialize handlers when page loads
 document.addEventListener('DOMContentLoaded', () => {
     initializeCryptoHandlers();
+    checkUrlParameters();
 
     // Clear forms on page load
     document.querySelectorAll('form').forEach(form => form.reset());
@@ -193,6 +302,9 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (action) {
             case 'decrypt':
                 handleDecrypt();
+                break;
+            case 'encrypt':
+                handleEncrypt();
                 break;
             case 'clearCache':
                 handleClearCache();

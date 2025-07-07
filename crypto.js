@@ -47,6 +47,7 @@ cryptoWorker.onmessage = (event) => {
 
 // Trigger decryption using cached keys
 export function decryptMessage(ciphertext) {
+    console.log("Decrypting message:", ciphertext);
     cryptoWorker.postMessage({
         action: "DECRYPT",
         payload: { ciphertext }
@@ -58,6 +59,22 @@ export function clearKeyCache() {
     cryptoWorker.postMessage({
         action: "CLEAR_CACHE",
         payload: {}
+    });
+}
+
+// Store a public key in the worker (for external public keys)
+export function storePublicKey(publicKey) {
+    cryptoWorker.postMessage({
+        action: "STORE_PUBLIC_KEY",
+        payload: { publicKey }
+    });
+}
+
+// Encrypt a message using the stored public key
+export function encryptMessage(message) {
+    cryptoWorker.postMessage({
+        action: "ENCRYPT",
+        payload: { message }
     });
 }
 
