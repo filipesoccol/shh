@@ -1,4 +1,7 @@
 {
+  "env": {
+    "theme": "dark"
+  },
   "permissions": {
     "allow": [
       "Bash(git:*)",
@@ -20,9 +23,9 @@
       "Bash(tail:*)",
       "Bash(sort:*)",
       "Bash(uniq:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(rg:*)"
     ],
     "deny": []
-  },
-  "env": { "theme": "dark" }
+  }
 }

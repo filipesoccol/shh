@@ -4,8 +4,6 @@ class CanvasPainter {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.isDrawing = false;
-        this.penColor = '#fff';
-        this.penWidth = 2;
         this.pixelCount = 0;
         this.initialImageData = null;
 
@@ -17,8 +15,8 @@ class CanvasPainter {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Set drawing properties
-        this.ctx.strokeStyle = this.penColor;
-        this.ctx.lineWidth = this.penWidth;
+        this.ctx.strokeStyle = '#fff';
+        this.ctx.lineWidth = 2;
         this.ctx.lineCap = 'round';
         this.ctx.lineJoin = 'round';
 

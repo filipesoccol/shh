@@ -58,10 +58,6 @@ self.onmessage = async (event) => {
                 result = "Cache cleared";
                 break;
 
-            case "GET_CACHE_SIZE":
-                // Return 1 if key-pair is cached, 0 if not
-                result = cachedKeyPair ? 1 : 0;
-                break;
 
             case "STORE_PUBLIC_KEY":
                 // Store a public key for encryption purposes

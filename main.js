@@ -8,8 +8,6 @@ import {
     encryptMessage,
 } from './crypto.js';
 
-// Global variables to store results
-let currentResults = {};
 
 // Wait for crypto.js to load and cryptoWorker to be available
 function initializeCryptoHandlers() {
@@ -29,7 +27,6 @@ function initializeCryptoHandlers() {
 
         if (event.data.success) {
             const result = event.data.result;
-            currentResults.lastResult = result;
 
             // Handle different types of results
             if (result && result.publicKey && result.privateKey) {
@@ -251,7 +248,7 @@ function showEncryptedMessage(encryptedMessage) {
 
 function showError(error) {
     // Show error in the most recently used section
-    const sections = ['generateResult', 'publicKeyResult', 'decryptResult', 'cacheResult'];
+    const sections = ['generateResult', 'decryptResult', 'cacheResult'];
     const activeSection = sections.find(id => {
         const section = document.getElementById(id);
         return section && section.classList.contains('show');

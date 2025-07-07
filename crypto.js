@@ -21,29 +21,6 @@ export function getPublicKey() {
     });
 }
 
-// Handle worker responses
-cryptoWorker.onmessage = (event) => {
-    if (event.data.success) {
-        const result = event.data.result;
-
-        // Check if result has both publicKey (full key generation)
-        if (result && result.publicKey) {
-            console.log("Keys generated:", {
-                publicKey: result.publicKey
-            });
-        }
-        // Check if result is just a public key string
-        else if (typeof result === 'string' && result.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----')) {
-            console.log("Public key:", result);
-        }
-        // Otherwise it's decrypted data
-        else {
-            console.log("Decrypted:", result);
-        }
-    } else {
-        console.error("Crypto failed:", event.data.error);
-    }
-};
 
 // Trigger decryption using cached keys
 export function decryptMessage(ciphertext) {
@@ -78,10 +55,3 @@ export function encryptMessage(message) {
     });
 }
 
-// Get the number of cached key pairs
-export function getCacheSize() {
-    cryptoWorker.postMessage({
-        action: "GET_CACHE_SIZE",
-        payload: {}
-    });
-}
