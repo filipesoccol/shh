@@ -12,25 +12,18 @@ A secure web application for cryptographic operations using OpenPGP encryption. 
 
 ## How to Run with Bun
 
-### Prerequisites
-- Install [Bun](https://bun.sh/) on your system
-
 ### Running the Application
 
 1. Clone or download this repository
 2. Navigate to the Shh directory:
    ```bash
    cd Shh
+   npm install
    ```
 
 3. Start a local server using Bun:
    ```bash
-   bun --bun serve . --port 3000
-   ```
-   
-   Or alternatively:
-   ```bash
-   bunx serve . -p 3000
+   npm run dev
    ```
 
 4. Open your browser and navigate to:
@@ -38,12 +31,51 @@ A secure web application for cryptographic operations using OpenPGP encryption. 
    http://localhost:3000
    ```
 
-### Usage
+## Docker Development Environment
 
-1. **Generate Keys**: Enter a secure passphrase and user ID to generate your encryption key pair
-2. **Get Public Key**: Retrieve your public key to share with others for encrypted communication
-3. **Decrypt Messages**: Paste encrypted messages to decrypt them using your cached private key
-4. **Clear Cache**: Remove cached keys from memory when done
+For a containerized Node.js development environment:
+
+### Quick Start
+
+1. **Clone and navigate to the repository:**
+   ```bash
+   git clone <your-repo-url>
+   cd SafeShare
+   ```
+
+2. **Build and run the container:**
+   ```bash
+   docker-compose up --build -d
+   ```
+   
+4. **Development workflow** (in VS Code terminal connected to container):
+   - Use the container as an isolated development environment
+   - Run build commands: `npm run build`
+   - Run tests and other development tasks
+   - All development happens inside the secure container environment
+
+### Alternative Docker Commands
+
+**Build the image manually:**
+```bash
+docker build -t shh-dev .
+```
+
+**Run container with shell access:**
+```bash
+docker run -it --rm \
+   -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
+   -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
+   safeshare-shh-dev /bin/bash
+```
+
+### Docker Environment Features
+
+- **Ultra Lightweight**: Based on Alpine Linux with Node.js 20 (~40MB total)
+- **VS Code Integration**: Use VS Code Dev Containers for seamless development
+- **Live Reload**: Changes are reflected immediately with volume mounting
+- **Isolated Environment**: Completely isolated Node.js environment with no external port exposure
+- **Secure Development**: All development happens inside the container without network access
 
 ## Security Notes
 

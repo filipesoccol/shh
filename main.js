@@ -1,4 +1,3 @@
-// Import crypto functions
 import {
     cryptoWorker,
     generateKeys,
@@ -49,37 +48,6 @@ function initializeCryptoHandlers() {
     };
 }
 
-// Event handlers
-function handleGenerateKeys() {
-    const form = document.getElementById('generateKeysForm');
-    const formData = new FormData(form);
-    const scribble = formData.get('scribble');
-    const userId = formData.get('userId');
-
-    if (!scribble || !userId) {
-        showError('Please fill in all fields');
-        return;
-    }
-
-    const button = form.querySelector('.btn');
-    const loading = button.querySelector('.loading');
-    loading.style.display = 'inline-block';
-    button.disabled = true;
-
-    hideResults();
-    generateKeys(scribble, userId);
-}
-
-function handleGetPublicKey() {
-    const button = document.querySelector('#publicKeyResult').previousElementSibling;
-    const loading = button.querySelector('.loading');
-    loading.style.display = 'inline-block';
-    button.disabled = true;
-
-    hideResults();
-    getPublicKey();
-}
-
 function handleDecrypt() {
     const form = document.getElementById('decryptForm');
     const formData = new FormData(form);
@@ -111,31 +79,50 @@ function handleClearCache() {
 
 // Display functions
 function showGeneratedKeys(result) {
-    const resultDiv = document.getElementById('generateResult');
-    const keysDiv = document.getElementById('generatedKeys');
+    const canvasContainer = document.querySelector('.canvas-container');
 
-    keysDiv.innerHTML = `
-        <div style="margin-bottom: 20px;">
-            <h4>Public Key:</h4>
-            <div class="key-display">${escapeHtml(result.publicKey)}</div>
-        </div>
-        <div>
-            <h4>Private Key:</h4>
-            <div class="key-display">${escapeHtml(result.privateKey)}</div>
-        </div>
-    `;
+    // Animate canvas painter div - scale down and fade out
+    if (canvasContainer) {
+        gsap.to(canvasContainer, {
+            scale: 0,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power2.inOut",
+            onComplete: () => {
+                getPublicKey();
+                if (window.canvasPainter) {
+                    window.canvasPainter.destroy();
+                }
+            }
+        });
+    }
 
-    resultDiv.classList.add('show');
-    resultDiv.classList.remove('error');
 }
 
 function showPublicKey(publicKey) {
-    const resultDiv = document.getElementById('publicKeyResult');
-    const keyDiv = document.getElementById('publicKeyDisplay');
+    const resultDiv = document.getElementById('generateResult');
+    // Create and show copy button
+    const copyButton = document.createElement('button');
+    copyButton.className = 'btn';
+    copyButton.innerHTML = '<span>Copy Public Key</span>';
+    copyButton.onclick = () => {
+        if (publicKey) {
+            // Convert public key to base64
+            const base64PublicKey = btoa(publicKey);
 
-    keyDiv.textContent = publicKey;
-    resultDiv.classList.add('show');
-    resultDiv.classList.remove('error');
+            navigator.clipboard.writeText(base64PublicKey).then(() => {
+                copyButton.innerHTML = '<span>Copied!</span>';
+                setTimeout(() => {
+                    copyButton.innerHTML = '<span>Copy Public Key</span>';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+    };
+
+    resultDiv.innerHTML = '';
+    resultDiv.appendChild(copyButton);
 }
 
 function showDecryptedMessage(message) {
@@ -183,11 +170,18 @@ function escapeHtml(text) {
 }
 
 // Initialize handlers when page loads
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
     initializeCryptoHandlers();
 
     // Clear forms on page load
     document.querySelectorAll('form').forEach(form => form.reset());
+
+    document.addEventListener('PasswordReady', (event) => {
+        const { password } = event.detail;
+        if (password) {
+            generateKeys(password, 'username');
+        }
+    });
 
     // Set up event delegation for buttons
     document.addEventListener('click', (event) => {
@@ -197,12 +191,6 @@ window.addEventListener('load', () => {
         const action = button.dataset.action;
 
         switch (action) {
-            case 'generateKeys':
-                handleGenerateKeys();
-                break;
-            case 'getPublicKey':
-                handleGetPublicKey();
-                break;
             case 'decrypt':
                 handleDecrypt();
                 break;

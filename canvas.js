@@ -27,21 +27,30 @@ class CanvasPainter {
     }
 
     setupEventListeners() {
+        // Bind methods to preserve 'this' context and enable proper removal
+        this.boundStartDrawing = (e) => this.startDrawing(e);
+        this.boundDraw = (e) => this.draw(e);
+        this.boundStopDrawing = () => this.stopDrawing();
+        this.boundHandleTouchStart = (e) => this.handleTouch(e, 'start');
+        this.boundHandleTouchMove = (e) => this.handleTouch(e, 'move');
+        this.boundHandleTouchEnd = (e) => this.handleTouch(e, 'end');
+        this.boundPreventDefault = (e) => e.preventDefault();
+
         // Mouse events
-        this.canvas.addEventListener('mousedown', (e) => this.startDrawing(e));
-        this.canvas.addEventListener('mousemove', (e) => this.draw(e));
-        this.canvas.addEventListener('mouseup', () => this.stopDrawing());
-        this.canvas.addEventListener('mouseout', () => this.stopDrawing());
+        this.canvas.addEventListener('mousedown', this.boundStartDrawing);
+        this.canvas.addEventListener('mousemove', this.boundDraw);
+        this.canvas.addEventListener('mouseup', this.boundStopDrawing);
+        this.canvas.addEventListener('mouseout', this.boundStopDrawing);
 
         // Touch events for mobile support
-        this.canvas.addEventListener('touchstart', (e) => this.handleTouch(e, 'start'));
-        this.canvas.addEventListener('touchmove', (e) => this.handleTouch(e, 'move'));
-        this.canvas.addEventListener('touchend', (e) => this.handleTouch(e, 'end'));
+        this.canvas.addEventListener('touchstart', this.boundHandleTouchStart);
+        this.canvas.addEventListener('touchmove', this.boundHandleTouchMove);
+        this.canvas.addEventListener('touchend', this.boundHandleTouchEnd);
 
         // Prevent scrolling when touching the canvas
-        this.canvas.addEventListener('touchstart', (e) => e.preventDefault());
-        this.canvas.addEventListener('touchend', (e) => e.preventDefault());
-        this.canvas.addEventListener('touchmove', (e) => e.preventDefault());
+        this.canvas.addEventListener('touchstart', this.boundPreventDefault);
+        this.canvas.addEventListener('touchend', this.boundPreventDefault);
+        this.canvas.addEventListener('touchmove', this.boundPreventDefault);
     }
 
     getCanvasCoordinates(e) {
@@ -67,7 +76,6 @@ class CanvasPainter {
         if (!this.isDrawing) return;
 
         const coords = this.getCanvasCoordinates(e);
-
         this.ctx.lineTo(coords.x, coords.y);
         this.ctx.stroke();
     }
@@ -76,8 +84,6 @@ class CanvasPainter {
         if (this.isDrawing) {
             this.isDrawing = false;
             this.ctx.beginPath();
-
-            // Count painted pixels after drawing stops
             this.countPaintedPixels();
         }
     }
@@ -100,8 +106,7 @@ class CanvasPainter {
         }
     }
 
-
-    countPaintedPixels() {
+    async countPaintedPixels() {
         const currentImageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
         const initialData = this.initialImageData.data;
         const currentData = currentImageData.data;
@@ -128,30 +133,18 @@ class CanvasPainter {
         }
 
         this.pixelCount = paintedPixels;
-    }
 
-    setPenColor(color) {
-        this.penColor = color;
-        this.ctx.strokeStyle = color;
-    }
-
-    setPenWidth(width) {
-        this.penWidth = width;
-        this.ctx.lineWidth = width;
-    }
-
-    async imageToPassword(file) {
-
-        const imageData = this.canvas.getImageData(0, 0, 300, 300);
-
-        // Step 2: Convert to monochrome and serialize
-        const byteArray = serializePixels(imageData.data);
-
-        // Step 3: Compute SHA-256 hash
-        const hashBuffer = await crypto.subtle.digest('SHA-256', byteArray);
-
-        // Step 4: Convert to URL-safe Base64
-        return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+        // Dispatch custom event when pixel count reaches 5000
+        if (paintedPixels >= 5000) {
+            const pixelThresholdEvent = new CustomEvent('PasswordReady', {
+                detail: {
+                    pixelCount: paintedPixels,
+                    password: await this.imageToPassword()
+                }
+            });
+            console.log(`Pixel count reached:`, pixelThresholdEvent);
+            document.dispatchEvent(pixelThresholdEvent);
+        }
     }
 
     serializePixels(pixelData) {
@@ -172,6 +165,52 @@ class CanvasPainter {
         }
 
         return bytes;
+    }
+
+    async imageToPassword() {
+        const imageData = this.ctx.getImageData(0, 0, 300, 300);
+        const byteArray = this.serializePixels(imageData.data);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', byteArray);
+        return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
+    }
+
+    // Destructor method to clean up resources and event listeners
+    destroy() {
+        // Remove mouse event listeners
+        this.canvas.removeEventListener('mousedown', this.boundStartDrawing);
+        this.canvas.removeEventListener('mousemove', this.boundDraw);
+        this.canvas.removeEventListener('mouseup', this.boundStopDrawing);
+        this.canvas.removeEventListener('mouseout', this.boundStopDrawing);
+
+        // Remove touch event listeners
+        this.canvas.removeEventListener('touchstart', this.boundHandleTouchStart);
+        this.canvas.removeEventListener('touchmove', this.boundHandleTouchMove);
+        this.canvas.removeEventListener('touchend', this.boundHandleTouchEnd);
+
+        // Remove preventDefault listeners
+        this.canvas.removeEventListener('touchstart', this.boundPreventDefault);
+        this.canvas.removeEventListener('touchend', this.boundPreventDefault);
+        this.canvas.removeEventListener('touchmove', this.boundPreventDefault);
+
+        // Clear canvas
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+        // Clear references
+        this.canvas = null;
+        this.ctx = null;
+        this.initialImageData = null;
+        this.boundStartDrawing = null;
+        this.boundDraw = null;
+        this.boundStopDrawing = null;
+        this.boundHandleTouchStart = null;
+        this.boundHandleTouchMove = null;
+        this.boundHandleTouchEnd = null;
+        this.boundPreventDefault = null;
+
+        // Remove from global scope if present
+        if (window.canvasPainter === this) {
+            window.canvasPainter = null;
+        }
     }
 }
 
