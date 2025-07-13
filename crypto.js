@@ -1,9 +1,6 @@
 // Create and export cryptoWorker
 export const cryptoWorker = new Worker("ws.js");
 
-// Make cryptoWorker globally accessible for backward compatibility
-window.cryptoWorker = cryptoWorker;
-
 // Generate keys using scribble
 export function generateKeys(scribble, userId) {
     cryptoWorker.postMessage({
