@@ -159,7 +159,13 @@ function showDecryptedMessage(message) {
     const resultDiv = document.getElementById('decryptResult');
     const messageDiv = document.getElementById('decryptedMessage');
 
-    messageDiv.innerHTML = `<div class="key-display">${escapeHtml(message)}</div>`;
+    // Create safe DOM elements
+    const displayDiv = document.createElement('div');
+    displayDiv.className = 'key-display';
+    displayDiv.textContent = message;
+    
+    messageDiv.innerHTML = '';
+    messageDiv.appendChild(displayDiv);
     resultDiv.classList.add('show');
     resultDiv.classList.remove('error');
 }
@@ -168,7 +174,18 @@ function showCacheCleared() {
     const resultDiv = document.getElementById('cacheResult');
     const messageDiv = document.getElementById('cacheMessage');
 
-    messageDiv.innerHTML = `<strong>Success:</strong> Key cache has been cleared successfully.`;
+    // Create safe DOM elements
+    const successContainer = document.createElement('div');
+    const successLabel = document.createElement('strong');
+    successLabel.textContent = 'Success: ';
+    const successMessage = document.createElement('span');
+    successMessage.textContent = 'Key cache has been cleared successfully.';
+    
+    successContainer.appendChild(successLabel);
+    successContainer.appendChild(successMessage);
+    
+    messageDiv.innerHTML = '';
+    messageDiv.appendChild(successContainer);
     resultDiv.classList.add('show');
     resultDiv.classList.remove('error');
 
@@ -229,13 +246,19 @@ function showEncryptedMessage(encryptedMessage) {
     const messageDiv = document.getElementById('encryptedMessage');
     const copyButton = document.getElementById('copyEncrypted');
 
-    messageDiv.innerHTML = `<div class="key-display">${escapeHtml(encryptedMessage)}</div>`;
+    // Create safe DOM elements
+    const displayDiv = document.createElement('div');
+    displayDiv.className = 'key-display';
+    displayDiv.textContent = encryptedMessage;
+    
+    messageDiv.innerHTML = '';
+    messageDiv.appendChild(displayDiv);
     copyButton.style.display = 'inline-block';
     copyButton.onclick = () => {
         navigator.clipboard.writeText(encryptedMessage).then(() => {
-            copyButton.innerHTML = 'Copied!';
+            copyButton.textContent = 'Copied!';
             setTimeout(() => {
-                copyButton.innerHTML = 'Copy Encrypted Message';
+                copyButton.textContent = 'Copy Encrypted Message';
             }, 2000);
         }).catch(err => {
             console.error('Failed to copy: ', err);
@@ -255,7 +278,19 @@ function showError(error) {
     }) || 'generateResult';
 
     const resultDiv = document.getElementById(activeSection);
-    resultDiv.innerHTML = `<strong>Error:</strong> ${escapeHtml(error)}`;
+    
+    // Create safe DOM elements
+    const errorContainer = document.createElement('div');
+    const errorLabel = document.createElement('strong');
+    errorLabel.textContent = 'Error: ';
+    const errorMessage = document.createElement('span');
+    errorMessage.textContent = error;
+    
+    errorContainer.appendChild(errorLabel);
+    errorContainer.appendChild(errorMessage);
+    
+    resultDiv.innerHTML = '';
+    resultDiv.appendChild(errorContainer);
     resultDiv.classList.add('show', 'error');
 }
 
@@ -279,8 +314,24 @@ function checkUrlParameters() {
 
     if (keyParam) {
         try {
+            // Validate base64 format
+            if (!/^[A-Za-z0-9+/]*={0,2}$/.test(keyParam)) {
+                throw new Error('Invalid base64 format');
+            }
+
             // Decode the base64 public key
             const publicKey = atob(keyParam);
+
+            // Validate PGP public key format
+            if (!publicKey.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----') || 
+                !publicKey.includes('-----END PGP PUBLIC KEY BLOCK-----')) {
+                throw new Error('Invalid PGP public key format');
+            }
+
+            // Additional length validation (reasonable PGP key size)
+            if (publicKey.length < 100 || publicKey.length > 10000) {
+                throw new Error('Invalid public key size');
+            }
 
             // Store the public key in the worker
             storePublicKey(publicKey);

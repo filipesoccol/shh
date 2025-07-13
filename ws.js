@@ -1,8 +1,35 @@
+// Note: Web Workers don't support SRI hashes with importScripts
+// This is a known limitation. For better security, consider bundling OpenPGP
 importScripts("https://unpkg.com/openpgp@6.1.1/dist/openpgp.min.js");
 
 // Single key-pair cache - persists until worker is terminated
 let cachedKeyPair = null;
 let scribble = null;
+
+// Secure memory clearing function
+function securelyWipeVariable(variable) {
+    if (typeof variable === 'string') {
+        // Overwrite string data with random values
+        const length = variable.length;
+        for (let i = 0; i < 3; i++) {
+            variable = crypto.getRandomValues(new Uint8Array(length))
+                .reduce((str, byte) => str + String.fromCharCode(byte), '');
+        }
+    } else if (variable && typeof variable === 'object') {
+        // Recursively clear object properties
+        Object.keys(variable).forEach(key => {
+            if (typeof variable[key] === 'string') {
+                const length = variable[key].length;
+                for (let i = 0; i < 3; i++) {
+                    variable[key] = crypto.getRandomValues(new Uint8Array(length))
+                        .reduce((str, byte) => str + String.fromCharCode(byte), '');
+                }
+            }
+            delete variable[key];
+        });
+    }
+    return null;
+}
 
 self.onmessage = async (event) => {
     const { action, payload } = event.data;
@@ -53,8 +80,13 @@ self.onmessage = async (event) => {
                 break;
 
             case "CLEAR_CACHE":
-                // Clear the cached key-pair
-                cachedKeyPair = null;
+                // Securely clear the cached key-pair and passphrase
+                if (cachedKeyPair) {
+                    cachedKeyPair = securelyWipeVariable(cachedKeyPair);
+                }
+                if (scribble) {
+                    scribble = securelyWipeVariable(scribble);
+                }
                 result = "Cache cleared";
                 break;
 
@@ -90,6 +122,34 @@ self.onmessage = async (event) => {
         self.postMessage({ success: true, result });
 
     } catch (error) {
-        self.postMessage({ success: false, error: error.message });
+        // Sanitize error messages to avoid information leakage
+        let sanitizedError;
+        switch (action) {
+            case "GENERATE_KEY":
+                sanitizedError = "Failed to generate key pair";
+                break;
+            case "GET_PUBLIC_KEY":
+                sanitizedError = "Public key not available";
+                break;
+            case "DECRYPT":
+                sanitizedError = "Failed to decrypt message";
+                break;
+            case "CLEAR_CACHE":
+                sanitizedError = "Failed to clear cache";
+                break;
+            case "STORE_PUBLIC_KEY":
+                sanitizedError = "Failed to store public key";
+                break;
+            case "ENCRYPT":
+                sanitizedError = "Failed to encrypt message";
+                break;
+            default:
+                sanitizedError = "Unknown operation failed";
+        }
+        
+        // Log actual error for debugging (not sent to client)
+        console.error(`Worker error in ${action}:`, error);
+        
+        self.postMessage({ success: false, error: sanitizedError });
     }
 };
