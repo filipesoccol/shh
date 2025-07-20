@@ -1,12 +1,21 @@
 {
-  "name": "shh-app",
-  "private": true,
+  "name": "shh",
+  "version": "1.0.0",
+  "description": "A secure web application for cryptographic operations using OpenPGP encryption",
+  "main": "server.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "bun run server.js",
+    "start": "bun run server.js"
   },
+  "keywords": [
+    "encryption",
+    "pgp",
+    "security",
+    "cryptography"
+  ],
+  "author": "",
+  "license": "MIT",
   "devDependencies": {
-    "vite": "^7.0.0"
+    "bun-types": "latest"
   }
 }

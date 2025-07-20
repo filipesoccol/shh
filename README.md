@@ -15,18 +15,27 @@ A secure web application for cryptographic operations using OpenPGP encryption. 
 ### Running the Application
 
 1. Clone or download this repository
-2. Navigate to the Shh directory:
+2. Navigate to the SafeShare directory:
    ```bash
-   cd Shh
-   npm install
+   cd SafeShare
    ```
 
-3. Start a local server using Bun:
+3. Install Bun (if not already installed):
    ```bash
-   npm run dev
+   curl -fsSL https://bun.sh/install | bash
    ```
 
-4. Open your browser and navigate to:
+4. Start the static file server:
+   ```bash
+   bun run dev
+   ```
+   
+   Or run directly:
+   ```bash
+   bun server.js
+   ```
+
+5. Open your browser and navigate to:
    ```
    http://localhost:3000
    ```

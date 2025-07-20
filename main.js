@@ -156,18 +156,19 @@ function showPublicKey(publicKey) {
 }
 
 function showDecryptedMessage(message) {
-    const resultDiv = document.getElementById('decryptResult');
     const messageDiv = document.getElementById('decryptedMessage');
 
     // Create safe DOM elements
     const displayDiv = document.createElement('div');
     displayDiv.className = 'key-display';
     displayDiv.textContent = message;
-    
+
     messageDiv.innerHTML = '';
     messageDiv.appendChild(displayDiv);
-    resultDiv.classList.add('show');
-    resultDiv.classList.remove('error');
+
+    // Flip the decrypt section to show the result
+    flipSectionContainer('decryptFlipContainer', '<strong>Message Decrypted Successfully!</strong><br>Your decrypted message is ready');
+    addFlipBackButton('flipBackButtonDecrypt', 'decryptFlipContainer');
 }
 
 function showCacheCleared() {
@@ -180,10 +181,10 @@ function showCacheCleared() {
     successLabel.textContent = 'Success: ';
     const successMessage = document.createElement('span');
     successMessage.textContent = 'Key cache has been cleared successfully.';
-    
+
     successContainer.appendChild(successLabel);
     successContainer.appendChild(successMessage);
-    
+
     messageDiv.innerHTML = '';
     messageDiv.appendChild(successContainer);
     resultDiv.classList.add('show');
@@ -242,7 +243,6 @@ function showEncryptMode() {
 }
 
 function showEncryptedMessage(encryptedMessage) {
-    const resultDiv = document.getElementById('encryptResult');
     const messageDiv = document.getElementById('encryptedMessage');
     const copyButton = document.getElementById('copyEncrypted');
 
@@ -250,7 +250,7 @@ function showEncryptedMessage(encryptedMessage) {
     const displayDiv = document.createElement('div');
     displayDiv.className = 'key-display';
     displayDiv.textContent = encryptedMessage;
-    
+
     messageDiv.innerHTML = '';
     messageDiv.appendChild(displayDiv);
     copyButton.style.display = 'inline-block';
@@ -265,8 +265,9 @@ function showEncryptedMessage(encryptedMessage) {
         });
     };
 
-    resultDiv.classList.add('show');
-    resultDiv.classList.remove('error');
+    // Flip the encrypt section to show the result
+    flipSectionContainer('encryptFlipContainer', '<strong>Message Encrypted Successfully!</strong><br>Your encrypted message is ready to share');
+    addFlipBackButton('flipBackButtonEncrypt', 'encryptFlipContainer');
 }
 
 function showError(error) {
@@ -278,17 +279,17 @@ function showError(error) {
     }) || 'generateResult';
 
     const resultDiv = document.getElementById(activeSection);
-    
+
     // Create safe DOM elements
     const errorContainer = document.createElement('div');
     const errorLabel = document.createElement('strong');
     errorLabel.textContent = 'Error: ';
     const errorMessage = document.createElement('span');
     errorMessage.textContent = error;
-    
+
     errorContainer.appendChild(errorLabel);
     errorContainer.appendChild(errorMessage);
-    
+
     resultDiv.innerHTML = '';
     resultDiv.appendChild(errorContainer);
     resultDiv.classList.add('show', 'error');
@@ -323,7 +324,7 @@ function checkUrlParameters() {
             const publicKey = atob(keyParam);
 
             // Validate PGP public key format
-            if (!publicKey.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----') || 
+            if (!publicKey.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----') ||
                 !publicKey.includes('-----END PGP PUBLIC KEY BLOCK-----')) {
                 throw new Error('Invalid PGP public key format');
             }
@@ -348,6 +349,45 @@ function checkUrlParameters() {
             showError('Invalid public key in URL parameter');
         }
     }
+}
+
+// Section flip functions
+function flipSectionContainer(containerId, message) {
+    const flipContainer = document.getElementById(containerId);
+
+    if (flipContainer) {
+        // Trigger the flip animation
+        flipContainer.classList.add('flipped');
+
+        // Update the message on the back
+        setTimeout(() => {
+            const messageElement = flipContainer.querySelector('.section-back .message');
+            if (messageElement && message) {
+                messageElement.innerHTML = message;
+            }
+        }, 400); // Wait for half the flip animation
+    }
+}
+
+function addFlipBackButton(buttonContainerId, flipContainerId) {
+    const flipBackButton = document.getElementById(buttonContainerId);
+
+    // Create flip back button
+    const backButton = document.createElement('button');
+    backButton.className = 'btn';
+    backButton.innerHTML = '<span>Back to Form</span>';
+    backButton.onclick = () => {
+        const flipContainer = document.getElementById(flipContainerId);
+        if (flipContainer && flipContainer.classList.contains('flipped')) {
+            flipContainer.classList.remove('flipped');
+
+            // Clear the back button
+            flipBackButton.innerHTML = '';
+        }
+    };
+
+    flipBackButton.innerHTML = '';
+    flipBackButton.appendChild(backButton);
 }
 
 // Initialize handlers when page loads

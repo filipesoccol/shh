@@ -9,7 +9,9 @@ class CanvasPainter {
 
         this.initializeCanvas();
         this.setupEventListeners();
-    } initializeCanvas() {
+    }
+
+    initializeCanvas() {
         // Set canvas background to white
         this.ctx.fillStyle = '#2c3e50';
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -89,8 +91,12 @@ class CanvasPainter {
     handleTouch(e, action) {
         e.preventDefault();
 
-        if (e.touches.length === 1) {
-            const touch = e.touches[0];
+        // For touchend, use changedTouches since e.touches will be empty
+        // For touchstart and touchmove, use e.touches
+        const touchList = action === 'end' ? e.changedTouches : e.touches;
+
+        if (touchList.length === 1) {
+            const touch = touchList[0];
             const mouseEvent = new MouseEvent({
                 start: 'mousedown',
                 move: 'mousemove',
@@ -132,8 +138,12 @@ class CanvasPainter {
 
         this.pixelCount = paintedPixels;
 
+        // Always log the current pixel count for debugging
+        console.log(`Current painted pixels: ${paintedPixels} (threshold: 5000)`);
+
         // Dispatch custom event when pixel count reaches 5000
         if (paintedPixels >= 5000) {
+            console.log(`Pixel count reached: ${paintedPixels}`);
             const pixelThresholdEvent = new CustomEvent('PasswordReady', {
                 detail: {
                     pixelCount: paintedPixels,

@@ -33,51 +33,70 @@
         <div id="generateResult"></div>
 
         <!-- Encrypt Message Section (shown when external public key is loaded) -->
-        <div class="section" id="encryptSection" style="display: none;">
-            <h2>Encrypt Message</h2>
-            <p style="margin-bottom: 20px; color: #666;">
-                Encrypt a message using the loaded public key.
-            </p>
-            <form id="encryptForm">
-                <div class="form-group">
-                    <label for="plaintext">Message to Encrypt:</label>
-                    <textarea id="plaintext" name="plaintext" required 
-                              placeholder="Enter your message here"></textarea>
+        <div class="section-container" id="encryptSection" style="display: none;">
+            <div class="section-flip-container" id="encryptFlipContainer">
+                <div class="section-front">
+                    <h2>Encrypt Message</h2>
+                    <p style="margin-bottom: 20px; color: #666;">
+                        Encrypt a message using the loaded public key.
+                    </p>
+                    <form id="encryptForm">
+                        <div class="form-group">
+                            <label for="plaintext">Message to Encrypt:</label>
+                            <textarea id="plaintext" name="plaintext" required 
+                                      placeholder="Enter your message here"></textarea>
+                        </div>
+                        <button type="button" class="btn" data-action="encrypt">
+                            Encrypt Message
+                            <span class="loading" style="display: none;"></span>
+                        </button>
+                    </form>
                 </div>
-                <button type="button" class="btn" data-action="encrypt">
-                    Encrypt Message
-                    <span class="loading" style="display: none;"></span>
-                </button>
-            </form>
-            <div id="encryptResult" class="result">
-                <h3>Encrypted Message:</h3>
-                <div id="encryptedMessage"></div>
-                <button type="button" class="btn" id="copyEncrypted" style="margin-top: 10px; display: none;">
-                    Copy Encrypted Message
-                </button>
+                <div class="section-back">
+                    <div class="message">
+                        <strong>Message Encrypted Successfully!</strong><br>
+                        Your encrypted message is ready to share
+                    </div>
+                    <div id="encryptResult" class="result">
+                        <h3>Encrypted Message:</h3>
+                        <div id="encryptedMessage"></div>
+                        <button type="button" class="btn" id="copyEncrypted" style="margin-top: 10px; display: none;">
+                            Copy Encrypted Message
+                        </button>
+                    </div>
+                    <div id="flipBackButtonEncrypt"></div>
+                </div>
             </div>
         </div>
 
         <!-- Decrypt Message Section -->
-        <div class="section">
-            <h2>Decrypt Message</h2>
-            <p style="margin-bottom: 20px; color: #666;">
-                Decrypt a message using the currently cached private key. You must generate keys first.
-            </p>
-            <form id="decryptForm">
-                <div class="form-group">
-                    <label for="ciphertext">Encrypted Message:</label>
-                    <textarea id="ciphertext" name="ciphertext" required 
-                              placeholder="Paste the encrypted message here"></textarea>
+        <div class="section-container">
+            <div class="section-flip-container" id="decryptFlipContainer">
+                <div class="section-front">
+                    <p style="margin-bottom: 20px; color: #999;">
+                        Decrypt a message using the currently cached private key. You must generate keys first.
+                    </p>
+                    <form id="decryptForm">
+                        <div class="form-group">
+                            <textarea id="ciphertext" name="ciphertext" required 
+                                      placeholder="Paste the encrypted message here"></textarea>
+                        </div>
+                        <button type="button" class="btn" data-action="decrypt">
+                            Decrypt Message
+                            <span class="loading" style="display: none;"></span>
+                        </button>
+                    </form>
                 </div>
-                <button type="button" class="btn" data-action="decrypt">
-                    Decrypt Message
-                    <span class="loading" style="display: none;"></span>
-                </button>
-            </form>
-            <div id="decryptResult" class="result">
-                <h3>Decrypted Message:</h3>
-                <div id="decryptedMessage"></div>
+                <div class="section-back">
+                    <div class="message">
+                        Your decrypted message is ready.
+                    </div>
+                    <div id="decryptResult" class="result">
+                        <h3>Decrypted Message:</h3>
+                        <div id="decryptedMessage"></div>
+                    </div>
+                    <div id="flipBackButtonDecrypt"></div>
+                </div>
             </div>
         </div>
 
