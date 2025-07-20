@@ -100,5 +100,3 @@ This project follows security-first development practices. When contributing:
 - Test cross-browser compatibility for Web Workers
 
 ## 👨‍💻 Creator
-
-- **Creator**: filipesoccol (filipe.soccol@gmail.com)
