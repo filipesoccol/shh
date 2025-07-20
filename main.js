@@ -6,6 +6,7 @@ import {
     clearKeyCache,
     storePublicKey,
     encryptMessage,
+    checkPrivateKey,
 } from './crypto.js';
 
 
@@ -32,15 +33,18 @@ function initializeCryptoHandlers() {
             if (result && result.publicKey && result.privateKey) {
                 // Full key generation
                 showGeneratedKeys(result);
+                updateDecryptSectionVisibility();
             } else if (typeof result === 'string' && result.includes('-----BEGIN PGP PUBLIC KEY BLOCK-----')) {
                 // Public key only
                 showPublicKey(result);
             } else if (result === "Cache cleared") {
                 // Cache cleared
                 showCacheCleared();
+                updateDecryptSectionVisibility();
             } else if (result === "Public key stored successfully") {
                 // Public key stored
                 console.log("Public key stored successfully");
+                updateDecryptSectionVisibility();
             } else if (typeof result === 'string' && result.includes('-----BEGIN PGP MESSAGE-----')) {
                 // Encrypted message
                 showEncryptedMessage(result);
@@ -308,6 +312,30 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+// Function to update UI based on private key availability
+async function updateDecryptSectionVisibility() {
+    const decryptSection = document.getElementById('decryptForm').closest('.section');
+    const cacheSection = document.querySelector('[data-action="clearCache"]').closest('.section');
+    
+    if (!decryptSection || !cacheSection) return;
+    
+    try {
+        const hasPrivateKey = await checkPrivateKey();
+        
+        if (hasPrivateKey) {
+            decryptSection.style.display = 'block';
+            cacheSection.style.display = 'block';
+        } else {
+            decryptSection.style.display = 'none';
+            cacheSection.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error checking private key status:', error);
+        decryptSection.style.display = 'none';
+        cacheSection.style.display = 'none';
+    }
+}
+
 // Function to check and handle URL parameters
 function checkUrlParameters() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -394,6 +422,9 @@ function addFlipBackButton(buttonContainerId, flipContainerId) {
 document.addEventListener('DOMContentLoaded', () => {
     initializeCryptoHandlers();
     checkUrlParameters();
+    
+    // Update decrypt section visibility on page load
+    updateDecryptSectionVisibility();
 
     // Clear forms on page load
     document.querySelectorAll('form').forEach(form => form.reset());

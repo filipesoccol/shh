@@ -52,3 +52,24 @@ export function encryptMessage(message) {
     });
 }
 
+// Check if a private key is available for decryption
+export function checkPrivateKey() {
+    return new Promise((resolve) => {
+        const originalHandler = cryptoWorker.onmessage;
+        
+        cryptoWorker.onmessage = (event) => {
+            if (event.data.success) {
+                resolve(event.data.result);
+            } else {
+                resolve(false);
+            }
+            cryptoWorker.onmessage = originalHandler;
+        };
+        
+        cryptoWorker.postMessage({
+            action: "CHECK_PRIVATE_KEY",
+            payload: {}
+        });
+    });
+}
+

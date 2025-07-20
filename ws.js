@@ -116,6 +116,11 @@ self.onmessage = async (event) => {
                 });
                 result = encrypted;
                 break;
+
+            case "CHECK_PRIVATE_KEY":
+                // Check if we have a private key available for decryption
+                result = !!(cachedKeyPair && cachedKeyPair.privateKey);
+                break;
         }
 
         // Securely send result back
@@ -142,6 +147,9 @@ self.onmessage = async (event) => {
                 break;
             case "ENCRYPT":
                 sanitizedError = "Failed to encrypt message";
+                break;
+            case "CHECK_PRIVATE_KEY":
+                sanitizedError = "Failed to check private key status";
                 break;
             default:
                 sanitizedError = "Unknown operation failed";
