@@ -102,4 +102,3 @@ This project follows security-first development practices. When contributing:
 ## 👨‍💻 Creator
 
 - **Creator**: filipesoccol (filipe.soccol@gmail.com)
-- **Repository**: Shh 🤫 cryptographic web application
