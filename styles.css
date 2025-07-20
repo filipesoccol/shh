@@ -41,8 +41,6 @@ body {
 
 .container {
     background: transparent;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px var(--shadow-medium);
     max-width: 800px;
     width: 100%;
 }
@@ -66,7 +64,6 @@ h1 .gradient-text {
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 30px;
     perspective: 1000px; /* Enable 3D perspective for flip effect */
     height: 400px; /* Fixed height to prevent layout shifts */
 }
@@ -146,7 +143,6 @@ h1 .gradient-text {
 }
 
 .section {
-    margin-bottom: 40px;
     padding: 30px;
     background: var(--bg-tertiary);
     border-radius: 12px;
@@ -266,4 +262,99 @@ textarea {
 
 .htmx-request .loading {
     display: inline-block;
+}
+
+/* Section flip container styles (similar to canvas flip container) */
+.section-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    perspective: 1000px; /* Enable 3D perspective for flip effect */
+    height: 400px; /* Match canvas container height */
+}
+
+.section-flip-container {
+    position: relative;
+    width: 320px; /* Match canvas container width */
+    height: 350px; /* Match canvas container height */
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease-in-out;
+}
+
+.section-flip-container.flipped {
+    transform: rotateY(180deg);
+}
+
+.section-front, .section-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.section-front {
+    padding: 20px;
+    background: var(--bg-tertiary);
+    border-radius: 12px;
+    border: 2px solid var(--accent-primary);
+    box-shadow: 0 8px 16px var(--shadow-medium);
+}
+
+.section-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+    border-radius: 12px;
+    border: 2px solid var(--accent-primary);
+    padding: 20px;
+    box-shadow: 0 8px 16px var(--shadow-medium);
+    text-align: center;
+}
+
+.section-back .message {
+    color: var(--text-primary);
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.section-front h2 {
+    color: var(--text-primary);
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.section-front p {
+    text-align: center;
+    color: #666;
+}
+
+.section-front .form-group {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.section-front form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.section-back .result {
+    background: transparent;
+    border: none;
+    display: block;
+    margin-top: 20px;
+    padding: 0;
+}
+
+.section-back .result h3 {
+    color: var(--text-primary);
+    margin-bottom: 15px;
 }
