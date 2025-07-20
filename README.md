@@ -1,101 +1,105 @@
 # 🤫 Shh
 
-A secure web application for cryptographic operations using OpenPGP encryption. Shh 🤫 provides a clean, modern interface for generating encryption keys, retrieving public keys, and decrypting messages with client-side security.
+A secure client-side cryptographic web application for OpenPGP encryption operations. Shh 🤫 provides a clean, modern interface for generating encryption keys, retrieving public keys, and decrypting messages with complete client-side security.
 
-## Features
+## ✨ Features
 
-- **Key Generation**: Generate ECC (Curve25519) key pairs with user-defined passphrases
-- **Public Key Retrieval**: Get your public key from cached key pairs
-- **Message Decryption**: Decrypt PGP-encrypted messages using cached private keys
-- **Secure Processing**: All cryptographic operations run in Web Workers for enhanced security
-- **Cache Management**: Clear cached keys when needed
+- **🔐 Key Generation**: Generate ECC (Curve25519) key pairs with user-defined passphrases
+- **📤 Public Key Retrieval**: Export your public key from cached key pairs for sharing
+- **📥 Message Decryption**: Decrypt PGP-encrypted messages using cached private keys
+- **🛡️ Secure Processing**: All cryptographic operations run in isolated Web Workers
+- **🧹 Cache Management**: Clear cached keys from memory when needed
+- **🎨 Entropy Generation**: Interactive canvas-based entropy collection for key generation
+- **🔒 Client-Side Only**: Zero server-side processing or key storage
 
-## How to Run with Bun
+## 🚀 Quick Start
 
-### Running the Application
+### Prerequisites
 
-1. Clone or download this repository
-2. Navigate to the SafeShare directory:
-   ```bash
-   cd SafeShare
-   ```
+- [Node.js](https://nodejs.org/) (v18 or higher)
+- [npm](https://www.npmjs.com/) or [Bun](https://bun.sh/)
 
-3. Install Bun (if not already installed):
-   ```bash
-   curl -fsSL https://bun.sh/install | bash
-   ```
+### Development Setup
 
-4. Start the static file server:
-   ```bash
-   bun run dev
-   ```
-   
-   Or run directly:
-   ```bash
-   bun server.js
-   ```
-
-5. Open your browser and navigate to:
-   ```
-   http://localhost:3000
-   ```
-
-## Docker Development Environment
-
-For a containerized Node.js development environment:
-
-### Quick Start
-
-1. **Clone and navigate to the repository:**
+1. **Clone the repository:**
    ```bash
    git clone <your-repo-url>
-   cd SafeShare
+   cd shh
    ```
 
-2. **Build and run the container:**
+2. **Install dependencies:**
    ```bash
-   docker-compose up --build -d
+   npm install
    ```
-   
-4. **Development workflow** (in VS Code terminal connected to container):
-   - Use the container as an isolated development environment
-   - Run build commands: `npm run build`
-   - Run tests and other development tasks
-   - All development happens inside the secure container environment
 
-### Alternative Docker Commands
+3. **Start the development server:**
+   ```bash
+   npm run dev
+   ```
 
-**Build the image manually:**
+4. **Open your browser and navigate to:**
+   ```
+   http://localhost:5173
+   ```
+
+### Production Build
+
 ```bash
-docker build -t shh-dev .
+npm run build
+npm run preview
 ```
 
-**Run container with shell access:**
-```bash
-docker run -it --rm \
-   -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
-   -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
-   shh-dev /bin/bash
-```
+## 🏗️ Architecture
 
-### Docker Environment Features
+### Core Components
 
-- **Ultra Lightweight**: Based on Alpine Linux with Node.js 20 (~40MB total)
-- **VS Code Integration**: Use VS Code Dev Containers for seamless development
-- **Live Reload**: Changes are reflected immediately with volume mounting
-- **Isolated Environment**: Completely isolated Node.js environment with no external port exposure
-- **Secure Development**: All development happens inside the container without network access
+- **`main.js`**: Application controller and UI orchestration
+- **`crypto.js`**: Web Worker interface and message routing bridge  
+- **`ws.js`**: Web Worker containing all cryptographic operations using OpenPGP.js
+- **`canvas.js`**: Canvas-based entropy generation system with drawing functionality
+- **`index.html`**: Single-page application with form-based sections
+- **`styles.css`**: Modern CSS with custom properties and responsive design
 
-## Security Notes
+### Security Design
 
-- All cryptographic operations are performed client-side
-- Private keys are temporarily cached in Web Worker memory only
-- No sensitive data is transmitted to external servers
-- Always use strong, unique passphrases for key generation
+- **🔐 Web Worker Isolation**: All cryptographic operations run in isolated Web Workers
+- **💬 Message-based Communication**: Main thread communicates with worker via secure message passing
+- **🖥️ Client-Side Only**: Zero server-side cryptographic operations or key storage
+- **🧠 Memory Management**: Explicit cleanup after operations, single key-pair cache
+- **🔑 Passphrase Protection**: All private keys are passphrase-encrypted
 
-## Technology Stack
+## 🔒 Security Notes
 
-- **Frontend**: HTML5, CSS3, JavaScript, HTMX
-- **Cryptography**: OpenPGP.js (v6.1.1)
-- **Architecture**: Web Workers for secure key operations
-- **Server**: Bun static file server
+- **Client-Side Only**: All cryptographic operations are performed entirely client-side
+- **Memory Isolation**: Private keys are temporarily cached in Web Worker memory only
+- **Zero Data Transmission**: No sensitive data is transmitted to external servers
+- **Strong Passphrases**: Always use strong, unique passphrases for key generation
+- **Secure Architecture**: Web Worker isolation prevents main thread access to cryptographic operations
+
+## 🛠️ Technology Stack
+
+- **Frontend**: HTML5, CSS3, ES6+ JavaScript modules
+- **Cryptography**: OpenPGP.js (v6.1.1) for ECC/Curve25519 operations
+- **Build Tool**: Vite for development and building
+- **Architecture**: Web Workers for secure cryptographic operation isolation
+- **Security**: Client-side-only processing with memory management
+
+## 📝 Available Commands
+
+- `npm run dev`: Start Vite development server
+- `npm run build`: Build for production
+- `npm run preview`: Preview production build
+
+## 🤝 Contributing
+
+This project follows security-first development practices. When contributing:
+
+- Maintain Web Worker isolation for all cryptographic operations
+- Follow existing ES6+ module patterns
+- Ensure proper cleanup of sensitive data from memory
+- Test cross-browser compatibility for Web Workers
+
+## 👨‍💻 Creator
+
+- **Creator**: filipesoccol (filipe.soccol@gmail.com)
+- **Repository**: Shh 🤫 cryptographic web application

@@ -44,7 +44,6 @@ The Web Worker handles four main operations:
 
 ### Branch Structure
 - **`master`**: Vite-based development setup
-- **`docker-instructions`**: Docker containerization with Bun server
 
 ### Security Principles
 - **Principle of Least Privilege**: Worker has minimal necessary permissions
