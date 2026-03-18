@@ -126,7 +126,7 @@ export async function encryptMessage(message) {
         ciphertext: arrayBufferToBase64(new Uint8Array(ciphertext))
     };
 
-    return JSON.stringify(result);
+    return btoa(JSON.stringify(result));
 }
 
 // Decrypt message using cached private key
@@ -136,7 +136,7 @@ export async function decryptMessage(encryptedData) {
     }
 
     // Parse the encrypted data
-    const data = JSON.parse(encryptedData);
+    const data = JSON.parse(atob(encryptedData));
 
     // Import the ephemeral public key
     const ephemeralPublicKey = await importPublicKey(data.ephemeralPublicKey);

@@ -157,7 +157,6 @@ function showEncryptMode() {
     const publicKeySection = document.getElementById('publicKeySection');
     const encryptSection = document.getElementById('encryptSection');
     const decryptSection = document.getElementById('decryptSection');
-    const cacheSection = document.getElementById('cacheSection');
 
     isEncryptOnlyMode = true;
 
@@ -171,9 +170,6 @@ function showEncryptMode() {
 
     if (decryptSection) {
         decryptSection.style.display = 'none';
-    }
-    if (cacheSection) {
-        cacheSection.style.display = 'none';
     }
 }
 
@@ -229,14 +225,12 @@ function hideResults() {
 
 async function updateSectionsVisibility() {
     const decryptSection = document.getElementById('decryptSection');
-    const cacheSection = document.getElementById('cacheSection');
     const encryptSection = document.getElementById('encryptSection');
 
-    if (!decryptSection || !cacheSection) return;
+    if (!decryptSection ) return;
 
     if (isEncryptOnlyMode) {
         decryptSection.style.display = 'none';
-        cacheSection.style.display = 'none';
         return;
     }
 
@@ -245,13 +239,11 @@ async function updateSectionsVisibility() {
 
         if (hasPrivateKey) {
             decryptSection.style.display = 'flex';
-            cacheSection.style.display = 'flex';
             if (encryptSection) {
                 encryptSection.style.display = 'none';
             }
         } else {
             decryptSection.style.display = 'none';
-            cacheSection.style.display = 'none';
             if (encryptSection) {
                 encryptSection.style.display = 'none';
             }
@@ -259,7 +251,6 @@ async function updateSectionsVisibility() {
     } catch (error) {
         console.error('Error checking private key status:', error);
         decryptSection.style.display = 'none';
-        cacheSection.style.display = 'none';
     }
 }
 

@@ -1,101 +1,36 @@
-# 🤫 Shh
+# Shh
 
-A secure web application for cryptographic operations using OpenPGP encryption. Shh 🤫 provides a clean, modern interface for generating encryption keys, retrieving public keys, and decrypting messages with client-side security.
+Secure secret sharing in the browser. Shh uses the Web Crypto API to generate ephemeral key pairs, share public keys via URL, and encrypt/decrypt messages — all client-side, with zero dependencies.
 
-## Features
+## How It Works
 
-- **Key Generation**: Generate ECC (Curve25519) key pairs with user-defined passphrases
-- **Public Key Retrieval**: Get your public key from cached key pairs
-- **Message Decryption**: Decrypt PGP-encrypted messages using cached private keys
-- **Secure Processing**: All cryptographic operations run in Web Workers for enhanced security
-- **Cache Management**: Clear cached keys when needed
+1. **Open Shh** — a fresh ECDH key pair (P-384) is generated automatically in your browser.
+2. **Share your link** — copy the public-key URL and send it to whoever needs to message you.
+3. **They encrypt** — the recipient opens your link, types a message, and Shh encrypts it with an ephemeral ECDH exchange + AES-256-GCM.
+4. **You decrypt** — paste the encrypted payload back into your Shh session to read the message.
 
-## How to Run with Bun
+Keys live only in memory for the duration of the page session. Nothing is stored on disk or sent to a server.
 
-### Running the Application
+## Running Locally
 
-1. Clone or download this repository
-2. Navigate to the SafeShare directory:
-   ```bash
-   cd SafeShare
-   ```
+Requires [Bun](https://bun.sh).
 
-3. Install Bun (if not already installed):
-   ```bash
-   curl -fsSL https://bun.sh/install | bash
-   ```
-
-4. Start the static file server:
-   ```bash
-   bun run dev
-   ```
-   
-   Or run directly:
-   ```bash
-   bun server.js
-   ```
-
-5. Open your browser and navigate to:
-   ```
-   http://localhost:3000
-   ```
-
-## Docker Development Environment
-
-For a containerized Node.js development environment:
-
-### Quick Start
-
-1. **Clone and navigate to the repository:**
-   ```bash
-   git clone <your-repo-url>
-   cd SafeShare
-   ```
-
-2. **Build and run the container:**
-   ```bash
-   docker-compose up --build -d
-   ```
-   
-4. **Development workflow** (in VS Code terminal connected to container):
-   - Use the container as an isolated development environment
-   - Run build commands: `npm run build`
-   - Run tests and other development tasks
-   - All development happens inside the secure container environment
-
-### Alternative Docker Commands
-
-**Build the image manually:**
 ```bash
-docker build -t shh-dev .
+bun run dev
 ```
 
-**Run container with shell access:**
-```bash
-docker run -it --rm \
-   -v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK \
-   -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK \
-   shh-dev /bin/bash
-```
-
-### Docker Environment Features
-
-- **Ultra Lightweight**: Based on Alpine Linux with Node.js 20 (~40MB total)
-- **VS Code Integration**: Use VS Code Dev Containers for seamless development
-- **Live Reload**: Changes are reflected immediately with volume mounting
-- **Isolated Environment**: Completely isolated Node.js environment with no external port exposure
-- **Secure Development**: All development happens inside the container without network access
+Then open `http://localhost:3000`.
 
 ## Security Notes
 
-- All cryptographic operations are performed client-side
-- Private keys are temporarily cached in Web Worker memory only
-- No sensitive data is transmitted to external servers
-- Always use strong, unique passphrases for key generation
+- All cryptographic operations run client-side using the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
+- Each encryption uses an ephemeral ECDH key pair so the sender's private key is never reused or shared
+- Private keys are held in memory only and discarded when the page is closed
+- No data is transmitted to any server — the Bun server only serves static files
+- A strict Content-Security-Policy header limits script and style sources
 
 ## Technology Stack
 
-- **Frontend**: HTML5, CSS3, JavaScript, HTMX
-- **Cryptography**: OpenPGP.js (v6.1.1)
-- **Architecture**: Web Workers for secure key operations
+- **Frontend**: HTML5, CSS3, vanilla JavaScript (ES modules)
+- **Cryptography**: Web Crypto API — ECDH (P-384) key agreement + AES-GCM (256-bit) encryption
 - **Server**: Bun static file server
