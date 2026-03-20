@@ -34,8 +34,8 @@ function showPublicKeySection() {
     if (copyBtn) {
         copyBtn.onclick = () => {
             if (cachedPublicKeyString) {
-                const link = `${window.location.origin}/?key=${encodeURIComponent(cachedPublicKeyString)}`;
-
+                const link = `${window.location.href}?key=${encodeURIComponent(cachedPublicKeyString)}`;
+                console.log('Public Key Link:', link);
                 navigator.clipboard.writeText(link).then(() => {
                     copyBtn.textContent = 'Copied!';
                     setTimeout(() => {

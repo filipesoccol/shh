@@ -21,6 +21,14 @@ bun run dev
 
 Then open `http://localhost:3000`.
 
+## Deploying to GitHub Pages
+
+```bash
+./deploy.sh
+```
+
+This pushes the static files to the `gh-pages` branch. Then enable GitHub Pages in your repo settings (Settings > Pages > Source: `gh-pages`, `/ (root)`).
+
 ## Security Notes
 
 - All cryptographic operations run client-side using the [Web Crypto API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API)
