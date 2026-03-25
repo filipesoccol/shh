@@ -28,8 +28,6 @@
                 </div>
             </div>
 
-            <div id="generateResult"></div>
-
             <!-- Encrypt Message Section (shown when external public key is loaded or keys generated) -->
             <div class="section-container" id="encryptSection" style="display: none;">
                 <div class="section-flip-container" id="encryptFlipContainer">
@@ -49,7 +47,6 @@
                     <div class="section-back">
                         <div class="message">
                             <strong>Message Encrypted Successfully!</strong><br>
-                            Your encrypted message is ready to share
                         </div>
                         <div id="encryptResult" class="result">
                             <h3>Encrypted Message:</h3>
@@ -80,9 +77,6 @@
                         </form>
                     </div>
                     <div class="section-back">
-                        <div class="message">
-                            Your decrypted message is ready.
-                        </div>
                         <div id="decryptResult" class="result">
                             <h3>Decrypted Message:</h3>
                             <div id="decryptedMessage"></div>
@@ -92,6 +86,7 @@
                 </div>
             </div>
         </div>
+        <div id="error-container"></div>
     </div>
 </body>
 </html>

@@ -79,23 +79,6 @@ async function handleDecrypt() {
     }
 }
 
-async function handleClearCache() {
-    const button = document.querySelector('[data-action="clearCache"]');
-    const loading = button.querySelector('.loading');
-    loading.style.display = 'inline-block';
-    button.disabled = true;
-
-    hideResults();
-
-    try {
-        clearKeyCache();
-        showCacheCleared();
-    } finally {
-        loading.style.display = 'none';
-        button.disabled = false;
-    }
-}
-
 async function handleEncrypt() {
     const form = document.getElementById('encryptForm');
     const formData = new FormData(form);
@@ -136,21 +119,8 @@ function showDecryptedMessage(message) {
     messageDiv.innerHTML = '';
     messageDiv.appendChild(displayDiv);
 
-    flipSectionContainer('decryptFlipContainer', '<strong>Message Decrypted Successfully!</strong><br>Your decrypted message is ready');
+    flipSectionContainer('decryptFlipContainer', '<strong>Message Decrypted Successfully!</strong>');
     addFlipBackButton('flipBackButtonDecrypt', 'decryptFlipContainer');
-}
-
-function showCacheCleared() {
-    isEncryptOnlyMode = false;
-    cachedPublicKeyString = null;
-
-    flipSectionContainer('cacheFlipContainer', '<strong>Cache Cleared Successfully!</strong><br>Your keys have been cleared from memory');
-    addFlipBackButton('flipBackButtonCache', 'cacheFlipContainer');
-
-    // Re-generate keys automatically
-    setTimeout(() => {
-        initializeKeys();
-    }, 1500);
 }
 
 function showEncryptMode() {
@@ -195,13 +165,13 @@ function showEncryptedMessage(encryptedMessage) {
         });
     };
 
-    flipSectionContainer('encryptFlipContainer', '<strong>Message Encrypted Successfully!</strong><br>Your encrypted message is ready to share');
+    flipSectionContainer('encryptFlipContainer', '<strong>Message Encrypted Successfully!</strong>');
     addFlipBackButton('flipBackButtonEncrypt', 'encryptFlipContainer');
 }
 
 function showError(error) {
-    const resultDiv = document.getElementById('generateResult');
-
+    const resultDiv = document.getElementById('error-container');
+    resultDiv.classList.add('enabled');
     const errorContainer = document.createElement('div');
     errorContainer.className = 'error-message';
     const errorLabel = document.createElement('strong');
@@ -302,7 +272,7 @@ function addFlipBackButton(buttonContainerId, flipContainerId) {
 
     const backButton = document.createElement('button');
     backButton.className = 'btn';
-    backButton.innerHTML = '<span>Back to Form</span>';
+    backButton.innerHTML = 'Decrypt another message';
     backButton.onclick = () => {
         const flipContainer = document.getElementById(flipContainerId);
         if (flipContainer && flipContainer.classList.contains('flipped')) {
@@ -341,9 +311,6 @@ document.addEventListener('DOMContentLoaded', async () => {
                 break;
             case 'encrypt':
                 handleEncrypt();
-                break;
-            case 'clearCache':
-                handleClearCache();
                 break;
         }
     });
