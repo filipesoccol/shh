@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; frame-src 'none'; form-action 'self'; base-uri 'self'; upgrade-insecure-requests;">
     <title>Shh - Secure Secret Sharing</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgogIDx0ZXh0IHk9IjMyIiBmb250LXNpemU9IjMyIj7wn5SSPC90ZXh0Pgo8L3N2Zz4=" type="image/svg+xml">
@@ -14,11 +14,11 @@
         <h1>Shh!</h1>
         <div class="cards-holder">
             <!-- Public Key Section (shown after auto-generating keys) -->
-            <div class="section-container" id="publicKeySection" style="display: none;">
+            <div class="section-container hidden" id="publicKeySection">
                 <div class="section-flip-container">
                     <div class="section-front">
                         <h2>1 <span>share</span></h2>
-                        <p style="margin-bottom: 20px; color: #999;">
+                        <p class="section-subtitle">
                             Share this link with others so they can send you encrypted messages.
                         </p>
                         <button type="button" class="btn" id="copyPublicKeyBtn">
@@ -29,7 +29,7 @@
             </div>
 
             <!-- Encrypt Message Section (shown when external public key is loaded or keys generated) -->
-            <div class="section-container" id="encryptSection" style="display: none;">
+            <div class="section-container hidden" id="encryptSection">
                 <div class="section-flip-container" id="encryptFlipContainer">
                     <div class="section-front">
                         <h2>1 <span>encrypt</span></h2>
@@ -40,7 +40,7 @@
                             </div>
                             <button type="button" class="btn" data-action="encrypt">
                                 Encrypt Message
-                                <span class="loading" style="display: none;"></span>
+                                <span class="loading hidden"></span>
                             </button>
                         </form>
                     </div>
@@ -51,7 +51,7 @@
                         <div id="encryptResult" class="result">
                             <h3>Encrypted Message:</h3>
                             <div id="encryptedMessage"></div>
-                            <button type="button" class="btn" id="copyEncrypted" style="margin-top: 10px; display: none;">
+                            <button type="button" class="btn hidden copy-encrypted-btn" id="copyEncrypted">
                                 Copy Encrypted Message
                             </button>
                         </div>
@@ -61,7 +61,7 @@
             </div>
 
             <!-- Decrypt Message Section -->
-            <div class="section-container" id="decryptSection" style="display: none;">
+            <div class="section-container hidden" id="decryptSection">
                 <div class="section-flip-container" id="decryptFlipContainer">
                     <div class="section-front">
                         <h2>2 <span>decrypt</span></h2>
@@ -72,7 +72,7 @@
                             </div>
                             <button type="button" class="btn" data-action="decrypt">
                                 Decrypt Message
-                                <span class="loading" style="display: none;"></span>
+                                <span class="loading hidden"></span>
                             </button>
                         </form>
                     </div>
@@ -87,6 +87,7 @@
             </div>
         </div>
         <div id="error-container"></div>
+        Create a footer saying
     </div>
 </body>
 </html>

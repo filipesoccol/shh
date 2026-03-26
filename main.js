@@ -28,7 +28,7 @@ function showPublicKeySection() {
     const copyBtn = document.getElementById('copyPublicKeyBtn');
 
     if (publicKeySection) {
-        publicKeySection.style.display = 'flex';
+        publicKeySection.classList.remove('hidden');
     }
 
     if (copyBtn) {
@@ -61,7 +61,7 @@ async function handleDecrypt() {
 
     const button = form.querySelector('.btn');
     const loading = button.querySelector('.loading');
-    loading.style.display = 'inline-block';
+    loading.classList.remove('hidden');
     button.disabled = true;
 
     hideResults();
@@ -74,7 +74,7 @@ async function handleDecrypt() {
     } catch (error) {
         showError(error.message || 'Decryption failed');
     } finally {
-        loading.style.display = 'none';
+        loading.classList.add('hidden');
         button.disabled = false;
     }
 }
@@ -91,7 +91,7 @@ async function handleEncrypt() {
 
     const button = form.querySelector('.btn');
     const loading = button.querySelector('.loading');
-    loading.style.display = 'inline-block';
+    loading.classList.remove('hidden');
     button.disabled = true;
 
     hideResults();
@@ -104,7 +104,7 @@ async function handleEncrypt() {
     } catch (error) {
         showError(error.message || 'Encryption failed');
     } finally {
-        loading.style.display = 'none';
+        loading.classList.add('hidden');
         button.disabled = false;
     }
 }
@@ -131,15 +131,15 @@ function showEncryptMode() {
     isEncryptOnlyMode = true;
 
     if (publicKeySection) {
-        publicKeySection.style.display = 'none';
+        publicKeySection.classList.add('hidden');
     }
 
     if (encryptSection) {
-        encryptSection.style.display = 'flex';
+        encryptSection.classList.remove('hidden');
     }
 
     if (decryptSection) {
-        decryptSection.style.display = 'none';
+        decryptSection.classList.add('hidden');
     }
 }
 
@@ -153,7 +153,7 @@ function showEncryptedMessage(encryptedMessage) {
 
     messageDiv.innerHTML = '';
     messageDiv.appendChild(displayDiv);
-    copyButton.style.display = 'inline-block';
+    copyButton.classList.remove('hidden');
     copyButton.onclick = () => {
         navigator.clipboard.writeText(encryptedMessage).then(() => {
             copyButton.textContent = 'Copied!';
@@ -200,7 +200,7 @@ async function updateSectionsVisibility() {
     if (!decryptSection ) return;
 
     if (isEncryptOnlyMode) {
-        decryptSection.style.display = 'none';
+        decryptSection.classList.add('hidden');
         return;
     }
 
@@ -208,19 +208,19 @@ async function updateSectionsVisibility() {
         const hasPrivateKey = await checkPrivateKey();
 
         if (hasPrivateKey) {
-            decryptSection.style.display = 'flex';
+            decryptSection.classList.remove('hidden');
             if (encryptSection) {
-                encryptSection.style.display = 'none';
+                encryptSection.classList.add('hidden');
             }
         } else {
-            decryptSection.style.display = 'none';
+            decryptSection.classList.add('hidden');
             if (encryptSection) {
-                encryptSection.style.display = 'none';
+                encryptSection.classList.add('hidden');
             }
         }
     } catch (error) {
         console.error('Error checking private key status:', error);
-        decryptSection.style.display = 'none';
+        decryptSection.classList.add('hidden');
     }
 }
 
