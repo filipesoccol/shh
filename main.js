@@ -111,13 +111,25 @@ async function handleEncrypt() {
 
 function showDecryptedMessage(message) {
     const messageDiv = document.getElementById('decryptedMessage');
-
+    const copyButton = document.getElementById('copyDecrypted');
+    
     const displayDiv = document.createElement('div');
     displayDiv.className = 'key-display';
     displayDiv.textContent = message;
 
     messageDiv.innerHTML = '';
     messageDiv.appendChild(displayDiv);
+    copyButton.classList.remove('hidden');
+    copyButton.onclick = () => {
+        navigator.clipboard.writeText(message).then(() => {
+            copyButton.textContent = 'Copied!';
+            setTimeout(() => {
+                copyButton.textContent = 'Copy Decrypted Message';
+            }, 2000);
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
+    };
 
     flipSectionContainer('decryptFlipContainer', '<strong>Message Decrypted Successfully!</strong>');
     addFlipBackButton('flipBackButtonDecrypt', 'decryptFlipContainer');
@@ -175,15 +187,19 @@ function showError(error) {
     const errorContainer = document.createElement('div');
     errorContainer.className = 'error-message';
     const errorLabel = document.createElement('strong');
-    errorLabel.textContent = 'Error: ';
+    errorLabel.textContent = 'Error decrypting message. ';
     const errorMessage = document.createElement('span');
-    errorMessage.textContent = error;
+    errorMessage.textContent = 'Please ensure that you copied the proper link to send to your friend.';
 
     errorContainer.appendChild(errorLabel);
     errorContainer.appendChild(errorMessage);
 
     resultDiv.innerHTML = '';
     resultDiv.appendChild(errorContainer);
+    setTimeout(() => {
+        resultDiv.classList.remove('enabled');
+        resultDiv.innerHTML = '';
+    }, 5000);
 }
 
 function hideResults() {
@@ -272,13 +288,17 @@ function addFlipBackButton(buttonContainerId, flipContainerId) {
 
     const backButton = document.createElement('button');
     backButton.className = 'btn';
-    backButton.innerHTML = 'Decrypt another message';
+    backButton.innerHTML = 'Go Back';
     backButton.onclick = () => {
         const flipContainer = document.getElementById(flipContainerId);
         if (flipContainer && flipContainer.classList.contains('flipped')) {
             flipContainer.classList.remove('flipped');
             flipBackButton.innerHTML = '';
         }
+        const cyphertextInput = document.getElementById('ciphertext');
+        const plaintextInput = document.getElementById('plaintext');
+        if (cyphertextInput) cyphertextInput.value = '';
+        if (plaintextInput) plaintextInput.value = '';
     };
 
     flipBackButton.innerHTML = '';

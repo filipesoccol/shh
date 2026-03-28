@@ -80,6 +80,9 @@
                         <div id="decryptResult" class="result">
                             <h3>Decrypted Message:</h3>
                             <div id="decryptedMessage"></div>
+                            <button type="button" class="btn hidden copy-encrypted-btn" id="copyDecrypted">
+                                Copy Decrypted Message
+                            </button>
                         </div>
                         <div id="flipBackButtonDecrypt"></div>
                     </div>
@@ -87,7 +90,11 @@
             </div>
         </div>
         <div id="error-container"></div>
-        Create a footer saying
-    </div>
+        <p class="tip">
+            Tip: Do not close this page while wait for your friend to send you the encrypted message. Refreshing the page will recreate the private key used for decryption, making it impossible to recover the original message.
+        </p>
+        <div class="footer">
+            <p>Made with love by <a href="https://filipe.contact" target="_blank" rel="noopener noreferrer">Filipe Soccol</a></p> 
+        </div>
 </body>
 </html>
